@@ -54,10 +54,13 @@ import {
   RELATION_PART_OF,
   RELATION_PROVIDES_API,
 } from '@backstage/catalog-model';
-
 import { TechDocsAddons } from '@backstage/plugin-techdocs-react';
 import { ReportIssue } from '@backstage/plugin-techdocs-module-addons-contrib';
-
+import {
+  EntityAWSCodePipelineContent,
+  isAWSCodePipelineAvailable,
+  EntityAWSCodePipelineOverviewCard
+} from '@aws/aws-codeservices-plugin-for-backstage';
 const techdocsContent = (
   <EntityTechdocsContent>
     <TechDocsAddons>
@@ -70,6 +73,9 @@ const cicdContent = (
   // This is an example of how you can implement your company's logic in entity page.
   // You can for example enforce that all components of type 'service' should use GitHubActions
   <EntitySwitch>
+    <EntitySwitch.Case if={isAWSCodePipelineAvailable}>
+      <EntityAWSCodePipelineContent />
+    </EntitySwitch.Case>
     <EntitySwitch.Case if={isGithubActionsAvailable}>
       <EntityGithubActionsContent />
     </EntitySwitch.Case>
@@ -143,7 +149,14 @@ const overviewContent = (
 const serviceEntityPage = (
   <EntityLayout>
     <EntityLayout.Route path="/" title="Overview">
-      {overviewContent}
+      <EntitySwitch>
+        <EntitySwitch.Case if={isAWSCodePipelineAvailable}>
+          <Grid item sm={6}>
+            <EntityAWSCodePipelineOverviewCard />
+          </Grid>
+        </EntitySwitch.Case>
+      </EntitySwitch>
+      {/* {overviewContent} */}
     </EntityLayout.Route>
 
     <EntityLayout.Route path="/ci-cd" title="CI/CD">
